@@ -7,13 +7,13 @@
 #include <string>
 using namespace std;
 
-#define tops 10
+#define tops 300
 #define areas 10
 
 
 struct graphSolver
 {
-	vector<vector<int>> graph;
+    vector<vector<int>> graph;
     vector <vector<int>> startPaths;
     int from;
     int to;
@@ -22,7 +22,7 @@ struct graphSolver
         for (int i = 0; i < tops; i++) {
             graph.push_back(temp);
         }
-        ifstream inFile("test.txt");
+     /*   ifstream inFile("test.txt");
         string temp2;
         for (int i = 0; i < tops; i++) {
             for (int j = 0; j < tops; j++) {
@@ -30,39 +30,39 @@ struct graphSolver
                 graph[i][j] = stoi(temp2);
             }
         }
-       /* inFile.close();
-        for (int i = 0; i < tops; i++) {
-            int step = rand() % 10 + 1;
-            cout << step << endl;
-            for (int k = 0; k < step; k++) {
-                int connectWith = rand() % (tops-i) + i;
-                if (connectWith != i) {
-                    int weight = rand() % 145 + 5;
-                    if (countStep(i) < 10 && countStep(connectWith) < 10) {
-                        graph[i][connectWith] = weight;
-                        graph[connectWith][i] = weight;
-                    }
-                }
-            }
-        }
-        cout << "accept" << endl;
-        for (int i = 0; i < tops; i++) {
-            if (countStep(i) == 0) {
-                bool flag = false;
-                int weight = rand() % 145 + 5;
-                while (!flag) {
-                    cout << "this" << endl;
-                    int connectWith = rand() % tops;
-                    cout << "this2 " << connectWith <<  endl;
-                    if (countStep(connectWith) < 10 && connectWith != i) {
-                        graph[i][connectWith] = weight;
-                        graph[connectWith][i] = weight;
-                        flag = true;
-                        cout << "Check bro: " << i << " " << connectWith << endl;
-                    }
-                }
-            }
-        }*/
+         inFile.close();*/
+         for (int i = 0; i < tops; i++) {
+             int step = rand() % 10 + 1;
+             cout << step << endl;
+             for (int k = 0; k < step; k++) {
+                 int connectWith = rand() % (tops-i) + i;
+                 if (connectWith != i) {
+                     int weight = rand() % 145 + 5;
+                     if (countStep(i) < 10 && countStep(connectWith) < 10) {
+                         graph[i][connectWith] = weight;
+                         graph[connectWith][i] = weight;
+                     }
+                 }
+             }
+         }
+         cout << "accept" << endl;
+         for (int i = 0; i < tops; i++) {
+             if (countStep(i) == 0) {
+                 bool flag = false;
+                 int weight = rand() % 145 + 5;
+                 while (!flag) {
+                     cout << "this" << endl;
+                     int connectWith = rand() % tops;
+                     cout << "this2 " << connectWith <<  endl;
+                     if (countStep(connectWith) < 10 && connectWith != i) {
+                         graph[i][connectWith] = weight;
+                         graph[connectWith][i] = weight;
+                         flag = true;
+                         cout << "Check bro: " << i << " " << connectWith << endl;
+                     }
+                 }
+             }
+         }
     }
     void outputGraph() {
         for (int i = 0; i < tops; i++) {
@@ -74,7 +74,7 @@ struct graphSolver
     }
     int countStep(int top) {
         int counter = 0;
-        for (int i = 0; i < tops;i++) {
+        for (int i = 0; i < tops; i++) {
             if (graph[top][i] != 0)counter++;
         }
         return counter;
@@ -104,29 +104,38 @@ struct graphSolver
         cout << "Input second top: " << endl;
         cin >> to;
         for (int k = 0; k < areas; k++) {
-            int current = from;
-            vector<int> tempStartPath;
-            tempStartPath.push_back(current);
-            while (current != to) {
-                vector<int> temp;
-                for (int i = 0; i < tops; i++) {
-                    if (graph[current][i] != 0 && !vectorContains(i,tempStartPath)) {
-                        temp.push_back(i);
-                    }
-                }
-                if (temp.size() == 0) {
-                    for (int i = 0; i < tempStartPath.size(); i++) {
-                        cout << tempStartPath[i] << " ";
-                    }
-                    cout << "------------Toopik------------" << endl;
-                    k--;
-                    break;
-                }
-                current = temp[rand() % temp.size()];
-                tempStartPath.push_back(current);
+            vector<int> tempStartPath = generatePath();
+            if (tempStartPath[tempStartPath.size()-1] != -1) {
+                startPaths.push_back(tempStartPath);
             }
-            startPaths.push_back(tempStartPath);
+            else {
+                k--;
+            }
         }
+    }
+    vector<int> generatePath() {
+        int current = from;
+        vector<int> tempStartPath;
+        tempStartPath.push_back(current);
+        while (current != to) {
+            vector<int> temp;
+            for (int i = 0; i < tops; i++) {
+                if (graph[current][i] != 0 && !vectorContains(i, tempStartPath)) {
+                    temp.push_back(i);
+                }
+            }
+            if (temp.size() == 0) {
+                for (int i = 0; i < tempStartPath.size(); i++) {
+                    cout << tempStartPath[i] << " ";
+                }
+                cout << "------------Toopik------------" << endl;
+                tempStartPath.push_back(-1);
+                return tempStartPath;
+            }
+            current = temp[rand() % temp.size()];
+            tempStartPath.push_back(current);
+        }
+        return tempStartPath;
     }
     void outputPaths() {
         for (int i = 0; i < areas; i++) {
@@ -144,6 +153,51 @@ struct graphSolver
         }
         cout << "Sum: " << sum << endl;
         return sum;
+    }
+    vector<int> findNear(vector<int> vec) {
+        vector<int> res;
+        if (vec.size() < 4) {
+            res = generatePath();
+            cout << "check generate " << endl;
+            return res;
+        }
+        else {
+            int posFrom = rand() % (vec.size() - 3);
+            int localFrom = vec[posFrom];
+            int localTo = vec[posFrom + 3];
+            int current = localFrom;
+            cout << "From " << posFrom << endl;
+            cout << "To " << posFrom + 3 << endl;
+            vector<int> res;
+            for (int i = 0; i < posFrom; i++) {
+                res.push_back(vec[i]);
+            }
+            res.push_back(current);
+            while (current != localTo) {
+                vector<int> temp;
+                for (int i = 0; i < tops; i++) {
+                    if (graph[current][i] != 0 && !vectorContains(i, res)) {
+                        temp.push_back(i);
+                    }
+                }
+                if (temp.size() == 0) {
+                    for (int i = 0; i < res.size(); i++) {
+                        cout << res[i] << " ";
+                    }
+                    cout << "------------Toopik Near------------" << endl;
+                    res.push_back(-1);
+                    return res;
+                }
+                current = temp[rand() % temp.size()];
+                res.push_back(current);
+            }
+            res.pop_back();
+            for (int i = posFrom + 3; i < vec.size(); i++) {
+                res.push_back(vec[i]);
+            }
+            cout << res.size() << endl;
+            return res;
+        }
     }
 };
 

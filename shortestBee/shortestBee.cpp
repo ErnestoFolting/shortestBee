@@ -19,4 +19,9 @@ int main()
     g.countStepAll();
     g.startFind();
     g.outputPaths();
+    vector<int> test = g.findNear(g.startPaths[0]);
+    cout << "CHECK" << endl;
+    for (int i = 0; i < test.size(); i++) {
+        cout << test[i] << " ";
+    }
 }
