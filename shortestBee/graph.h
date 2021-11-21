@@ -5,10 +5,11 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <cstdlib>
 #include "solution.h"
 using namespace std;
 
-#define tops 300
+#define tops 10
 #define areas 10
 #define scouts 5
 #define workers 15
@@ -25,7 +26,7 @@ struct graphSolver
         for (int i = 0; i < tops; i++) {
             graph.push_back(temp);
         }
-        /*ifstream inFile("test.txt");
+        ifstream inFile("test2.txt");
         string temp2;
         for (int i = 0; i < tops; i++) {
             for (int j = 0; j < tops; j++) {
@@ -33,8 +34,8 @@ struct graphSolver
                 graph[i][j] = stoi(temp2);
             }
         }
-        inFile.close();*/
-         for (int i = 0; i < tops; i++) {
+        inFile.close();
+         /*for (int i = 0; i < tops; i++) {
              int step = rand() % 10 + 1;
              cout << step << endl;
              for (int k = 0; k < step; k++) {
@@ -65,7 +66,7 @@ struct graphSolver
                      }
                  }
              }
-         }
+         }*/
     }
     void outputGraph() {
         for (int i = 0; i < tops; i++) {
@@ -106,6 +107,7 @@ struct graphSolver
         cin >> from;
         cout << "Input second top: " << endl;
         cin >> to;
+        int counterOfToopiks = 0;
         for (int k = 0; k < areas; k++) {
             vector<int> tempStartPath = generatePath();
             if (tempStartPath[tempStartPath.size()-1] != -1) {
@@ -113,6 +115,12 @@ struct graphSolver
             }
             else {
                 k--;
+                counterOfToopiks++;
+            }
+            if (counterOfToopiks >= 10) {
+                counterOfToopiks = 0;
+                cout << "There is no path between this tops" << endl;
+                exit(0);
             }
         }
     }
@@ -192,7 +200,7 @@ struct graphSolver
             vector<int> near = findNear(to.vec);
             if (near[near.size() - 1] == -1) {
                 i--;
-                cout << "---------TOPIK WHILE SEND WORKERS----------" << endl;
+                cout << "---------TOOPIK WHILE SEND WORKERS----------" << endl;
             }
             else {
                 nearby.push_back(solution(near, graph));
