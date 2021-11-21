@@ -9,10 +9,10 @@
 #include "solution.h"
 using namespace std;
 
-#define tops 10
+#define tops 300
 #define areas 10
 #define scouts 5
-#define workers 15
+#define workers 30
 
 
 struct graphSolver
@@ -67,6 +67,14 @@ struct graphSolver
                  }
              }
          }*/
+        /* ofstream outFile("test2.txt");
+         for (int i = 0; i < tops; i++) {
+             for (int j = 0; j < tops; j++) {
+                 outFile << graph[i][j] << " ";
+             }
+             outFile << endl;
+         }
+         outFile.close();*/
     }
     void outputGraph() {
         for (int i = 0; i < tops; i++) {
@@ -117,7 +125,7 @@ struct graphSolver
                 k--;
                 counterOfToopiks++;
             }
-            if (counterOfToopiks >= 10) {
+            if (counterOfToopiks >= 1000) {
                 counterOfToopiks = 0;
                 cout << "There is no path between this tops" << endl;
                 exit(0);
@@ -136,10 +144,10 @@ struct graphSolver
                 }
             }
             if (temp.size() == 0) {
-                for (int i = 0; i < tempStartPath.size(); i++) {
-                    cout << tempStartPath[i] << " ";
-                }
-                cout << "------------Toopik------------" << endl;
+                //for (int i = 0; i < tempStartPath.size(); i++) { //-----------------------
+                //    cout << tempStartPath[i] << " ";
+                //}
+                //cout << "------------Toopik------------" << endl;
                 tempStartPath.push_back(-1);
                 return tempStartPath;
             }
@@ -152,7 +160,7 @@ struct graphSolver
         vector<int> res;
         if (vec.size() < 4) {
             res = generatePath();
-            cout << "check generate " << endl;
+            //cout << "check generate " << endl;
             return res;
         }
         else {
@@ -160,8 +168,8 @@ struct graphSolver
             int localFrom = vec[posFrom];
             int localTo = vec[posFrom + 3];
             int current = localFrom;
-            cout << "From " << posFrom << endl;
-            cout << "To " << posFrom + 3 << endl;
+            /*cout << "From " << posFrom << endl;
+            cout << "To " << posFrom + 3 << endl;*/
             vector<int> res;
             for (int i = 0; i < posFrom; i++) {
                 res.push_back(vec[i]);
@@ -175,10 +183,10 @@ struct graphSolver
                     }
                 }
                 if (temp.size() == 0) {
-                    for (int i = 0; i < res.size(); i++) {
-                        cout << res[i] << " ";
-                    }
-                    cout << "------------Toopik Near------------" << endl;
+                    //for (int i = 0; i < res.size(); i++) { //-------------------------
+                    //    cout << res[i] << " ";
+                    //}
+                    //cout << "------------Toopik Near------------" << endl;
                     res.push_back(-1);
                     return res;
                 }
@@ -189,7 +197,6 @@ struct graphSolver
             for (int i = posFrom + 3; i < vec.size(); i++) {
                 res.push_back(vec[i]);
             }
-            cout << res.size() << endl;
             return res;
         }
     }
@@ -200,7 +207,7 @@ struct graphSolver
             vector<int> near = findNear(to.vec);
             if (near[near.size() - 1] == -1) {
                 i--;
-                cout << "---------TOOPIK WHILE SEND WORKERS----------" << endl;
+                /*cout << "---------TOOPIK WHILE SEND WORKERS----------" << endl;*/
             }
             else {
                 nearby.push_back(solution(near, graph));
@@ -214,11 +221,12 @@ struct graphSolver
                 index = i;
             }
         }
-        cout << "BEST FROM NEARBY" << endl;
-        for (int i = 0; i < nearby[index].vec.size(); i++) {
-            cout << nearby[index].vec[i] << " ";
-        }
-        cout << endl << nearby[index].nectar << endl;
+        /*cout << "WAS " << nearby.size() << "NEAR PATHS" << endl;
+        cout << "BEST FROM NEARBY" << endl;*/
+        //for (int i = 0; i < nearby[index].vec.size(); i++) {
+        //    cout << nearby[index].vec[i] << " ";
+        //}
+        cout << endl << "BEST NECTAR FROM NEARBY: " << nearby[index].nectar << endl;
         return nearby[index];
     }
     void sortByNectar() {
@@ -236,28 +244,35 @@ struct graphSolver
     }
     void beesOptimization() {
         int workersForArea = workers / scouts;
-        cout << "Start generation: " << endl;
+        cout << "START GENERATED 10 PATHS: " << endl;
         for (int i = 0; i < startPaths.size(); i++) {
             for (int j = 0; j < startPaths[i].vec.size(); j++) {
                 cout << startPaths[i].vec[j] << " ";
             }
-            cout << "\nNectar: " << startPaths[i].nectar << endl;
+            cout << "\nNECTAR: " << startPaths[i].nectar << endl;
         }
-        for (int iterations = 0; iterations < 10; iterations++) {
+        for (int iterations = 0; iterations < 100; iterations++) {
+            cout << endl << "--------------------ITERATION " << iterations << "---------------------" << endl << endl;
             vector<solution> selectedByScouts;
             for (int i = 0; i < scouts; i++) {
                 selectedByScouts.push_back(solution(startPaths[rand() % startPaths.size()].vec,graph));
             }
             for (int i = 0; i < selectedByScouts.size(); i++) {
-                startPaths.push_back(sendWorkers(workersForArea, selectedByScouts[i]));
+                if (i == 0) {
+                    startPaths.push_back(sendWorkers(workersForArea + workers%scouts, selectedByScouts[i]));
+                }
+                else {
+                    startPaths.push_back(sendWorkers(workersForArea, selectedByScouts[i]));
+                }
                 sortByNectar();
                 startPaths.pop_back();
             }
         }
-        cout << "RESULT: " << endl;
-        for (int i = 0; i < startPaths.size(); i++) {
-            cout << startPaths[i].nectar << endl;
+        cout << "RESULT BEST PATH: " << endl;
+        for (int i = 0; i < startPaths[0].vec.size(); i++) {
+            cout << startPaths[0].vec[i]<< endl;
         }
+        cout << "IT'S NECTAR: " << startPaths[0].nectar << endl;
     }
 };
 
