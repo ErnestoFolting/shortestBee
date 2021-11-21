@@ -5,16 +5,19 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include "solution.h"
 using namespace std;
 
 #define tops 300
 #define areas 10
+#define scouts 5
+#define workers 15
 
 
 struct graphSolver
 {
     vector<vector<int>> graph;
-    vector <vector<int>> startPaths;
+    vector <solution> startPaths;
     int from;
     int to;
     void generateGraph() {
@@ -22,7 +25,7 @@ struct graphSolver
         for (int i = 0; i < tops; i++) {
             graph.push_back(temp);
         }
-     /*   ifstream inFile("test.txt");
+        /*ifstream inFile("test.txt");
         string temp2;
         for (int i = 0; i < tops; i++) {
             for (int j = 0; j < tops; j++) {
@@ -30,7 +33,7 @@ struct graphSolver
                 graph[i][j] = stoi(temp2);
             }
         }
-         inFile.close();*/
+        inFile.close();*/
          for (int i = 0; i < tops; i++) {
              int step = rand() % 10 + 1;
              cout << step << endl;
@@ -106,7 +109,7 @@ struct graphSolver
         for (int k = 0; k < areas; k++) {
             vector<int> tempStartPath = generatePath();
             if (tempStartPath[tempStartPath.size()-1] != -1) {
-                startPaths.push_back(tempStartPath);
+                startPaths.push_back(solution(tempStartPath,graph));
             }
             else {
                 k--;
@@ -136,23 +139,6 @@ struct graphSolver
             tempStartPath.push_back(current);
         }
         return tempStartPath;
-    }
-    void outputPaths() {
-        for (int i = 0; i < areas; i++) {
-            for (int j = 0; j < startPaths[i].size(); j++) {
-                cout << startPaths[i][j] << " ";
-            }
-            cout << endl;
-            countPath(startPaths[i]);
-        }
-    }
-    int countPath(vector<int> solution) {
-        int sum = 0;
-        for (int i = 0; i < solution.size() - 1; i++) {
-            sum += graph[solution[i]][solution[i + 1]];
-        }
-        cout << "Sum: " << sum << endl;
-        return sum;
     }
     vector<int> findNear(vector<int> vec) {
         vector<int> res;
@@ -199,6 +185,73 @@ struct graphSolver
             return res;
         }
     }
+    solution sendWorkers(int workersNum, solution to) {
+        vector<solution> nearby;
+        nearby.push_back(to);
+        for (int i = 0; i < workersNum; i++) {
+            vector<int> near = findNear(to.vec);
+            if (near[near.size() - 1] == -1) {
+                i--;
+                cout << "---------TOPIK WHILE SEND WORKERS----------" << endl;
+            }
+            else {
+                nearby.push_back(solution(near, graph));
+            }
+        }
+        int min = INT_MAX;
+        int index = 0;
+        for (int i = 0; i < nearby.size(); i++) {
+            if (nearby[i].nectar < min) {
+                min = nearby[i].nectar;
+                index = i;
+            }
+        }
+        cout << "BEST FROM NEARBY" << endl;
+        for (int i = 0; i < nearby[index].vec.size(); i++) {
+            cout << nearby[index].vec[i] << " ";
+        }
+        cout << endl << nearby[index].nectar << endl;
+        return nearby[index];
+    }
+    void sortByNectar() {
+        for (int i = 0; i < startPaths.size() - 1; ++i)
+        {
+            for (int j = 0; j < startPaths.size() - i - 1; ++j)
+            {
+                if (startPaths[j].nectar > startPaths[j + 1].nectar) {
+                    solution temp = startPaths[j];
+                    startPaths[j] = startPaths[j + 1];
+                    startPaths[j + 1] = temp;
+                }
+            }
+        }
+    }
+    void beesOptimization() {
+        int workersForArea = workers / scouts;
+        cout << "Start generation: " << endl;
+        for (int i = 0; i < startPaths.size(); i++) {
+            for (int j = 0; j < startPaths[i].vec.size(); j++) {
+                cout << startPaths[i].vec[j] << " ";
+            }
+            cout << "\nNectar: " << startPaths[i].nectar << endl;
+        }
+        for (int iterations = 0; iterations < 10; iterations++) {
+            vector<solution> selectedByScouts;
+            for (int i = 0; i < scouts; i++) {
+                selectedByScouts.push_back(solution(startPaths[rand() % startPaths.size()].vec,graph));
+            }
+            for (int i = 0; i < selectedByScouts.size(); i++) {
+                startPaths.push_back(sendWorkers(workersForArea, selectedByScouts[i]));
+                sortByNectar();
+                startPaths.pop_back();
+            }
+        }
+        cout << "RESULT: " << endl;
+        for (int i = 0; i < startPaths.size(); i++) {
+            cout << startPaths[i].nectar << endl;
+        }
+    }
 };
+
 
 
