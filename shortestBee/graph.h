@@ -9,10 +9,10 @@
 #include "solution.h"
 using namespace std;
 
-#define tops 300
+#define tops 10
 #define areas 10
 #define scouts 5
-#define workers 30
+#define workers 10
 
 
 struct graphSolver
@@ -26,7 +26,7 @@ struct graphSolver
         for (int i = 0; i < tops; i++) {
             graph.push_back(temp);
         }
-        ifstream inFile("test2.txt");
+        ifstream inFile("test.txt");
         string temp2;
         for (int i = 0; i < tops; i++) {
             for (int j = 0; j < tops; j++) {
@@ -35,7 +35,7 @@ struct graphSolver
             }
         }
         inFile.close();
-         /*for (int i = 0; i < tops; i++) {
+         /*for (int i = 0; i < tops; i++) {    -------ÃÅÍÅÐÀÖ²ß ÃÐÀÔÀ--------
              int step = rand() % 10 + 1;
              cout << step << endl;
              for (int k = 0; k < step; k++) {
@@ -144,10 +144,6 @@ struct graphSolver
                 }
             }
             if (temp.size() == 0) {
-                //for (int i = 0; i < tempStartPath.size(); i++) { //-----------------------
-                //    cout << tempStartPath[i] << " ";
-                //}
-                //cout << "------------Toopik------------" << endl;
                 tempStartPath.push_back(-1);
                 return tempStartPath;
             }
@@ -160,7 +156,6 @@ struct graphSolver
         vector<int> res;
         if (vec.size() < 4) {
             res = generatePath();
-            //cout << "check generate " << endl;
             return res;
         }
         else {
@@ -168,8 +163,6 @@ struct graphSolver
             int localFrom = vec[posFrom];
             int localTo = vec[posFrom + 3];
             int current = localFrom;
-            /*cout << "From " << posFrom << endl;
-            cout << "To " << posFrom + 3 << endl;*/
             vector<int> res;
             for (int i = 0; i < posFrom; i++) {
                 res.push_back(vec[i]);
@@ -183,10 +176,6 @@ struct graphSolver
                     }
                 }
                 if (temp.size() == 0) {
-                    //for (int i = 0; i < res.size(); i++) { //-------------------------
-                    //    cout << res[i] << " ";
-                    //}
-                    //cout << "------------Toopik Near------------" << endl;
                     res.push_back(-1);
                     return res;
                 }
@@ -207,7 +196,6 @@ struct graphSolver
             vector<int> near = findNear(to.vec);
             if (near[near.size() - 1] == -1) {
                 i--;
-                /*cout << "---------TOOPIK WHILE SEND WORKERS----------" << endl;*/
             }
             else {
                 nearby.push_back(solution(near, graph));
@@ -221,11 +209,6 @@ struct graphSolver
                 index = i;
             }
         }
-        /*cout << "WAS " << nearby.size() << "NEAR PATHS" << endl;
-        cout << "BEST FROM NEARBY" << endl;*/
-        //for (int i = 0; i < nearby[index].vec.size(); i++) {
-        //    cout << nearby[index].vec[i] << " ";
-        //}
         cout << endl << "BEST NECTAR FROM NEARBY: " << nearby[index].nectar << endl;
         return nearby[index];
     }
